@@ -4,6 +4,7 @@ test.rb
 .bundle
 .config
 .yardoc
+.ruby-version
 Gemfile.lock
 InstalledFiles
 _yardoc
