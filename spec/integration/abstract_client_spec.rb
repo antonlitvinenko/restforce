@@ -1,6 +1,7 @@
 require 'spec_helper'
 
 shared_examples_for Restforce::AbstractClient do
+
   describe '.list_sobjects' do
     requests :sobjects, :fixture => 'sobject/describe_sobjects_success_response'
 
@@ -61,7 +62,7 @@ shared_examples_for Restforce::AbstractClient do
     context 'with multipart' do
       requests 'sobjects/Account',
         :method => :post,
-        :with_body => %r(----boundary_string\r\nContent-Disposition: form-data; name=\"entity_content\";\r\nContent-Type: application/json\r\n\r\n{\"Name\":\"Foobar\"}\r\n----boundary_string\r\nContent-Disposition: form-data; name=\"Blob\"; filename=\"blob.jpg\"\r\nContent-Length: 42171\r\nContent-Type: image/jpeg\r\nContent-Transfer-Encoding: binary),
+        :with_body => %r(----boundary_string\r\nContent-Disposition: form-data; name=\"entity_content\"\r\nContent-Type: application/json\r\n\r\n{\"Name\":\"Foobar\"}\r\n----boundary_string\r\nContent-Disposition: form-data; name=\"Blob\"; filename=\"blob.jpg\"\r\nContent-Length: 42171\r\nContent-Type: image/jpeg\r\nContent-Transfer-Encoding: binary),
         :fixture => 'sobject/create_success_response'
 
       subject { client.create('Account', :Name => 'Foobar', :Blob => Restforce::UploadIO.new(File.expand_path('../../fixtures/blob.jpg', __FILE__), 'image/jpeg')) }
@@ -199,6 +200,43 @@ shared_examples_for Restforce::AbstractClient do
 
       subject { client.find('Account', '1234', 'External_Field__c') }
       it { should be_a Hash }
+    end
+  end
+
+  describe '.select' do
+    context 'when no external id is specified' do
+      context 'when no select list is specified' do
+        requests 'sobjects/Account/1234',
+        :fixture => 'sobject/sobject_select_success_response'
+
+        subject { client.select('Account', '1234', nil, nil) }
+        it { should be_a Hash }
+      end
+      context 'when select list is specified' do
+        requests 'sobjects/Account/1234\?fields=External_Field__c',
+        :fixture => 'sobject/sobject_select_success_response'
+
+        subject { client.select('Account', '1234', ['External_Field__c']) }
+        it { should be_a Hash }
+      end
+    end
+
+    context 'when an external id is specified' do
+      context 'when no select list is specified' do
+        requests 'sobjects/Account/External_Field__c/1234',
+        :fixture => 'sobject/sobject_select_success_response'
+
+        subject { client.select('Account', '1234', nil, 'External_Field__c') }
+        it { should be_a Hash }
+      end
+
+      context 'when select list is specified' do
+        requests 'sobjects/Account/External_Field__c/1234\?fields=External_Field__c',
+        :fixture => 'sobject/sobject_select_success_response'
+
+        subject { client.select('Account', '1234', ['External_Field__c'], 'External_Field__c') }
+        it { should be_a Hash }
+      end
     end
   end
 

@@ -1,3 +1,11 @@
+## 1.5.1 (Nov 27, 2014)
+
+*   Looser restrictions on hashie gem #123 @zenchild
+
+## 1.5.0 (Oct 15, 2014)
+
+*   Upgrade faraday dependency to 0.9 #124 @zenchild
+
 ## 1.4.1 (Jun 18, 2013)
 
 *   Fixed a bug with HTTP 413 responses #75 @patronmanager
